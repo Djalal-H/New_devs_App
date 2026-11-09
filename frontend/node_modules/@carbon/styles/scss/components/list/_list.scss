@@ -34,6 +34,11 @@
     margin-inline-start: $spacing-05;
   }
 
+  .#{$prefix}--list--ordered:not(.#{$prefix}--list--nested),
+  .#{$prefix}--list--ordered--native:not(.#{$prefix}--list--nested) {
+    padding-inline-start: $spacing-06;
+  }
+
   .#{$prefix}--list--expressive,
   .#{$prefix}--list--expressive .#{$prefix}--list--nested {
     @include type.type-style('body-02');
@@ -91,7 +96,7 @@
   .#{$prefix}--list--unordered.#{$prefix}--list--nested
     > .#{$prefix}--list__item::before {
     // ▪ square
-    content: '\0025AA';
+    content: '\0025AA\00FE0E';
     // offset to account for smaller ▪ vs –
     inset-inline-start: calc(-1 * #{$spacing-04});
   }

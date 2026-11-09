@@ -2,43 +2,26 @@ import {Mark, MarkType, Slice, Fragment, NodeType} from "prosemirror-model"
 
 import {Step} from "./step"
 import {Transform} from "./transform"
-import {AddMarkStep, RemoveMarkStep} from "./mark_step"
+import {AddMarkStep, RemoveMarkStep, pushMarkStep} from "./mark_step"
 import {ReplaceStep} from "./replace_step"
 
 export function addMark(tr: Transform, from: number, to: number, mark: Mark) {
-  let removed: Step[] = [], added: Step[] = []
-  let removing: RemoveMarkStep | undefined, adding: AddMarkStep | undefined
+  let added: AddMarkStep[] = []
   tr.doc.nodesBetween(from, to, (node, pos, parent) => {
     if (!node.isInline) return
     let marks = node.marks
     if (!mark.isInSet(marks) && parent!.type.allowsMarkType(mark.type)) {
       let start = Math.max(pos, from), end = Math.min(pos + node.nodeSize, to)
-      let newSet = mark.addToSet(marks)
-
-      for (let i = 0; i < marks.length; i++) {
-        if (!marks[i].isInSet(newSet)) {
-          if (removing && removing.to == start && removing.mark.eq(marks[i]))
-            (removing as any).to = end
-          else
-            removed.push(removing = new RemoveMarkStep(start, end, marks[i]))
-        }
-      }
-
-      if (adding && adding.to == start)
-        (adding as any).to = end
-      else
-        added.push(adding = new AddMarkStep(start, end, mark))
+      pushMarkStep(AddMarkStep, start, end, mark, added)
     }
   })
-
-  removed.forEach(s => tr.step(s))
   added.forEach(s => tr.step(s))
 }
 
 export function removeMark(tr: Transform, from: number, to: number, mark?: Mark | MarkType | null) {
   let matched: {style: Mark, from: number, to: number, step: number}[] = [], step = 0
   tr.doc.nodesBetween(from, to, (node, pos) => {
-    if (!node.isInline) return
+    if (!node.isInline || !node.isAtom) return
     step++
     let toRemove = null
     if (mark instanceof MarkType) {

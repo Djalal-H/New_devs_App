@@ -11,6 +11,9 @@ const PROPERTIES = [
 
 const Dashboard: React.FC = () => {
   const [selectedProperty, setSelectedProperty] = useState('prop-001');
+  // Reporting month as "YYYY-MM" (defaults to March 2024, the period in the seed data)
+  const [selectedMonth, setSelectedMonth] = useState('2024-03');
+  const [year, month] = selectedMonth.split('-').map(Number);
 
   return (
     <div className="p-4 lg:p-6 min-h-full">
@@ -41,12 +44,19 @@ const Dashboard: React.FC = () => {
                     </option>
                   ))}
                 </select>
+                <label className="text-xs font-medium text-gray-700 mb-1 mt-3">Select Month</label>
+                <input
+                  type="month"
+                  value={selectedMonth}
+                  onChange={(e) => e.target.value && setSelectedMonth(e.target.value)}
+                  className="block w-full sm:w-auto min-w-[200px] px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
+                />
               </div>
             </div>
           </div>
 
           <div className="space-y-6">
-            <RevenueSummary propertyId={selectedProperty} />
+            <RevenueSummary propertyId={selectedProperty} month={month} year={year} />
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 //
-// Copyright IBM Corp. 2016, 2023
+// Copyright IBM Corp. 2016, 2026
 //
 // This source code is licensed under the Apache-2.0 license found in the
 // LICENSE file in the root directory of this source tree.
@@ -18,6 +18,27 @@
 @use '../../utilities/visually-hidden' as *;
 
 @mixin copy-button {
+  // Default copy button colors. Wrapped in `:where()` so they have zero
+  // specificity and any button kind class (e.g. `.cds--btn--primary`) overrides
+  // them, including its hover and active states.
+  :where(.#{$prefix}--copy-btn) {
+    background-color: $layer;
+
+    @media (any-hover: hover) {
+      &:hover {
+        background-color: $layer-hover;
+      }
+    }
+
+    &:active {
+      background-color: $layer-active;
+    }
+
+    svg {
+      fill: $icon-primary;
+    }
+  }
+
   .#{$prefix}--copy-btn {
     @include reset;
 
@@ -27,16 +48,7 @@
     justify-content: center;
     padding: 0;
     border: none;
-    background-color: $layer;
     cursor: pointer;
-
-    &:hover {
-      background-color: $layer-hover;
-    }
-
-    &:active {
-      background-color: $layer-active;
-    }
 
     &::before {
       @include tooltip--caret;
@@ -81,10 +93,6 @@
       .#{$prefix}--copy-btn__feedback {
       animation: $duration-fast-02 motion(standard, productive) #{$prefix}--show-feedback;
     }
-  }
-
-  .#{$prefix}--copy-btn svg {
-    fill: $icon-primary;
   }
 
   // Needs to come after reset so hidden text is not set to font-size: 100%
